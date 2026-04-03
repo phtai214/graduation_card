@@ -223,21 +223,21 @@ type CubeCfg = {
 const CUBE_CFGS: CubeCfg[] = [
   // Close cubes — clearly visible on sides
   { pos: [-23, 5, -11], size: 1.8, rx: 0.38, ry: 0.52, rz: 0.12, drift: 0.40, color: '#60a5fa', opacity: 0.70 },
-  { pos: [23, 8, -13],  size: 1.5, rx: -0.22, ry: 0.44, rz: 0.30, drift: 0.48, color: '#a78bfa', opacity: 0.65 },
+  { pos: [23, 8, -13], size: 1.5, rx: -0.22, ry: 0.44, rz: 0.30, drift: 0.48, color: '#a78bfa', opacity: 0.65 },
   { pos: [-19, -9, -14], size: 2.0, rx: 0.52, ry: -0.30, rz: 0.42, drift: 0.52, color: '#22d3ee', opacity: 0.60 },
   { pos: [20, -7, -15], size: 1.3, rx: 0.65, ry: 0.42, rz: -0.32, drift: 0.62, color: '#93c5fd', opacity: 0.72 },
   // Extra close cubes
-  { pos: [-26, 2, -9],  size: 1.0, rx: 0.70, ry: 0.35, rz: 0.55, drift: 0.55, color: '#818cf8', opacity: 0.68 },
+  { pos: [-26, 2, -9], size: 1.0, rx: 0.70, ry: 0.35, rz: 0.55, drift: 0.55, color: '#818cf8', opacity: 0.68 },
   { pos: [26, -3, -10], size: 1.2, rx: 0.30, ry: 0.60, rz: -0.25, drift: 0.50, color: '#38bdf8', opacity: 0.65 },
   // Mid cubes
-  { pos: [6, 14, -22],  size: 3.0, rx: 0.16, ry: 0.26, rz: 0.09, drift: 0.23, color: '#3b82f6', opacity: 0.48 },
+  { pos: [6, 14, -22], size: 3.0, rx: 0.16, ry: 0.26, rz: 0.09, drift: 0.23, color: '#3b82f6', opacity: 0.48 },
   { pos: [-15, 11, -24], size: 2.5, rx: 0.21, ry: 0.19, rz: 0.23, drift: 0.29, color: '#a78bfa', opacity: 0.50 },
   { pos: [23, -4, -20], size: 2.8, rx: 0.13, ry: 0.36, rz: -0.16, drift: 0.19, color: '#38bdf8', opacity: 0.45 },
   { pos: [-6, -12, -18], size: 1.6, rx: 0.58, ry: 0.38, rz: 0.28, drift: 0.58, color: '#7dd3fc', opacity: 0.52 },
   // Background cubes — visible
   { pos: [-10, 7, -34], size: 5.5, rx: 0.06, ry: 0.13, rz: 0.07, drift: 0.12, color: '#3b82f6', opacity: 0.22 },
   { pos: [12, -9, -30], size: 4.5, rx: 0.08, ry: 0.11, rz: 0.08, drift: 0.15, color: '#8b5cf6', opacity: 0.24 },
-  { pos: [0, 18, -38],  size: 7.0, rx: 0.04, ry: 0.09, rz: 0.05, drift: 0.09, color: '#60a5fa', opacity: 0.16 },
+  { pos: [0, 18, -38], size: 7.0, rx: 0.04, ry: 0.09, rz: 0.05, drift: 0.09, color: '#60a5fa', opacity: 0.16 },
 ];
 
 function FloatingCube({ pos, size, rx, ry, rz, drift, color, opacity }: CubeCfg) {
@@ -403,7 +403,7 @@ function Scene() {
       <GlowOrb p={[-17, 7, -26]} color="#60a5fa" spd={0.26} />
       <GlowOrb p={[18, -8, -22]} color="#a78bfa" spd={0.42} />
       <GlowOrb p={[0, 14, -30]} color="#38bdf8" spd={0.18} />
-      {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19].map(i => <Comet key={i} offset={i} />)}
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map(i => <Comet key={i} offset={i} />)}
       <fog attach="fog" args={[PAGE_BG, 32, 98]} />
     </>
   );
@@ -583,7 +583,7 @@ export default function GraduationInvitation() {
                       <span style={{ fontSize: 'clamp(18px, 2.2vw, 22px)' }}>{s.icon}</span>
                       <p className="text-white font-black leading-none mt-1.5"
                         style={{ fontSize: 'clamp(17px, 2.2vw, 22px)' }}>{s.v}</p>
-                      <p className="text-sky-300/65 font-bold tracking-[0.2em] mt-0.5"
+                      <p className="text-sky-500/65 font-bold tracking-[0.2em] mt-0.5"
                         style={{ fontSize: '7px' }}>{s.l}</p>
                       <p className="text-white/35 font-medium mt-0.5"
                         style={{ fontSize: '7px' }}>{s.sub}</p>
@@ -598,7 +598,7 @@ export default function GraduationInvitation() {
                     border: '1px solid rgba(255,255,255,0.08)',
                     backdropFilter: 'blur(6px)',
                   }}>
-                  <p className="text-sky-200/60 text-center italic leading-relaxed"
+                  <p className="text-sky-500/60 text-center italic leading-relaxed"
                     style={{ fontSize: 'clamp(10px, 1.25vw, 12px)' }}>
                     &ldquo;Từ sinh viên IT không biết gì đến<br />kỹ sư phần mềm biết... một chút&rdquo; 😅
                   </p>
@@ -650,8 +650,8 @@ export default function GraduationInvitation() {
                   <div className="flex items-center gap-2 mb-2.5">
                     <div className="h-[2.5px] w-5 rounded-full"
                       style={{ background: 'linear-gradient(to right,rgb(46, 125, 253), #8b5cf6)' }} />
-                    <p className="text-blue-700/55 font-black tracking-[0.65em] uppercase"
-                      style={{ fontSize: 'clamp(8px, 1.1vw, 10px)' }}>
+                    <p className="text-blue-700/55 font-black tracking-[0.75em] uppercase"
+                      style={{ fontSize: 'clamp(12px, 1vw, 10px)' }}>
                       Trân trọng kính mời
                     </p>
                   </div>
@@ -821,8 +821,8 @@ export default function GraduationInvitation() {
                 <div className="flex items-center gap-3 -mt-1">
                   <div className="flex-1 h-px rounded-full"
                     style={{ background: 'linear-gradient(to right, transparent, rgba(37,99,235,0.18))' }} />
-                  <p className="text-slate-700 tracking-[0.42em] text-center flex-shrink-0"
-                    style={{ fontSize: 'clamp(9px, 1.05vw, 10.5px)' }}>
+                  <p className="text-slate-700 tracking-[0.52em] text-center flex-shrink-0"
+                    style={{ fontSize: 'clamp(10px, 1.0vw, 10.5px)' }}>
                     ✦ Với tất cả niềm tự hào · Nguyễn Phước Tài ✦
                   </p>
                   <div className="flex-1 h-px rounded-full"
