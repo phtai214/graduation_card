@@ -760,99 +760,96 @@ export default function GraduationInvitation() {
       ═══════════════════════════════════════════════════════ */}
       {showModal && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-5"
-          style={{ background: 'rgba(2,10,28,0.88)', backdropFilter: 'blur(12px)' }}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
+          style={{ background: 'rgba(5,10,30,0.96)' }}
           onClick={() => setShowModal(false)}
         >
           <div
-            className="rsvp-modal w-full sm:max-w-[440px] rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
+            className="rsvp-modal w-full sm:max-w-[460px] rounded-t-[32px] sm:rounded-[28px] overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
-            {/* Terminal title bar */}
+            {/* Gradient stripe top */}
+            <div className="h-[3px] w-full flex-shrink-0"
+              style={{ background: 'linear-gradient(90deg,#2563eb,#7c3aed,#0ea5e9)' }} />
+
+            {/* Terminal titlebar */}
             <div className="flex items-center gap-2 px-5 py-3 rsvp-titlebar">
-              <button
-                onClick={() => setShowModal(false)}
-                className="w-3.5 h-3.5 rounded-full bg-red-400 hover:bg-red-500 transition-colors flex items-center justify-center group cursor-pointer">
-                <X size={8} strokeWidth={3} color="rgba(180,0,0,0.6)" className="opacity-0 group-hover:opacity-100" />
-              </button>
-              <div className="w-3.5 h-3.5 rounded-full bg-yellow-400" />
-              <div className="w-3.5 h-3.5 rounded-full bg-green-400" />
-              <code className="ml-2 text-slate-400 font-mono" style={{ fontSize: '11px' }}>
-                rsvp.confirm() › graduation_2026.js
+              <button onClick={() => setShowModal(false)}
+                className="w-3.5 h-3.5 rounded-full cursor-pointer flex-shrink-0"
+                style={{ background: '#ff5f56' }} />
+              <div className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ background: '#ffbd2e' }} />
+              <div className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ background: '#27c93f' }} />
+              <code className="ml-3 text-slate-400 font-mono truncate" style={{ fontSize: '11px' }}>
+                graduation_2026 — rsvp.confirm()
               </code>
             </div>
 
-            {/* Form body */}
-            <div className="p-6 sm:p-8">
+            {/* Body */}
+            <div className="rsvp-body px-6 sm:px-8 pt-7 pb-8">
+
               {/* Header */}
-              <div className="text-center mb-7">
-                <div className="text-[44px] leading-none mb-3">🎉</div>
-                <h3 className="text-slate-800 font-black tracking-tight"
-                  style={{ fontSize: 'clamp(18px, 2.5vw, 22px)' }}>
-                  Xác nhận tham dự
-                </h3>
-                <p className="text-slate-500 mt-1.5 leading-relaxed"
-                  style={{ fontSize: 'clamp(12px, 1.5vw, 13.5px)' }}>
-                  Điền thông tin để nhận SMS xác nhận tự động 📱
-                </p>
+              <div className="flex items-start gap-4 mb-7">
+                <div className="rsvp-icon-box flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl">
+                  🎓
+                </div>
+                <div>
+                  <h3 className="text-slate-900 font-black leading-tight" style={{ fontSize: '20px' }}>
+                    Xác nhận tham dự
+                  </h3>
+                  <p className="text-slate-500 mt-1 leading-snug text-sm">
+                    Điền thông tin để nhận SMS xác nhận kèm<br />thông tin sự kiện 📱
+                  </p>
+                </div>
               </div>
 
-              {/* Name field */}
+              {/* Name */}
               <div className="mb-4">
-                <label className="block text-slate-600 font-extrabold mb-2" style={{ fontSize: '12.5px' }}>
+                <label className="flex items-center gap-1.5 mb-2 font-bold text-slate-700" style={{ fontSize: '13px' }}>
+                  <User size={13} strokeWidth={2.5} color="#6366f1" />
                   Họ và tên
                 </label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <User size={15} strokeWidth={2} color="#94a3b8" />
-                  </div>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })); }}
-                    placeholder="Nguyễn Văn A"
-                    className={`rsvp-input w-full pl-10 pr-4 py-3 rounded-xl font-medium text-slate-800 placeholder:text-slate-300 outline-none${errors.name ? ' rsvp-input-err' : ''}`}
-                    style={{ fontSize: '14px' }}
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={e => { setForm(p => ({ ...p, name: e.target.value })); setErrors(p => ({ ...p, name: '' })); }}
+                  placeholder="Nguyễn Văn A"
+                  className={`rsvp-input w-full px-4 py-3.5 rounded-2xl font-medium text-slate-800 outline-none${errors.name ? ' rsvp-input-err' : ''}`}
+                  style={{ fontSize: '15px' }}
+                />
                 {errors.name && (
-                  <p className="text-red-500 font-medium mt-1.5 ml-0.5 flex items-center gap-1" style={{ fontSize: '12px' }}>
+                  <p className="flex items-center gap-1 text-red-500 font-medium mt-2" style={{ fontSize: '12px' }}>
                     ⚠ {errors.name}
                   </p>
                 )}
               </div>
 
-              {/* Phone field */}
+              {/* Phone */}
               <div className="mb-5">
-                <label className="block text-slate-600 font-extrabold mb-2" style={{ fontSize: '12.5px' }}>
+                <label className="flex items-center gap-1.5 mb-2 font-bold text-slate-700" style={{ fontSize: '13px' }}>
+                  <Phone size={13} strokeWidth={2.5} color="#6366f1" />
                   Số điện thoại
                 </label>
-                <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <Phone size={15} strokeWidth={2} color="#94a3b8" />
-                  </div>
-                  <input
-                    type="tel"
-                    value={form.phone}
-                    onChange={e => { setForm(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: '' })); }}
-                    placeholder="0912 345 678"
-                    className={`rsvp-input w-full pl-10 pr-4 py-3 rounded-xl font-medium text-slate-800 placeholder:text-slate-300 outline-none${errors.phone ? ' rsvp-input-err' : ''}`}
-                    style={{ fontSize: '14px' }}
-                    maxLength={11}
-                  />
-                </div>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => { setForm(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: '' })); }}
+                  placeholder="0912 345 678"
+                  className={`rsvp-input w-full px-4 py-3.5 rounded-2xl font-medium text-slate-800 outline-none${errors.phone ? ' rsvp-input-err' : ''}`}
+                  style={{ fontSize: '15px' }}
+                  maxLength={11}
+                />
                 {errors.phone && (
-                  <p className="text-red-500 font-medium mt-1.5 ml-0.5 flex items-center gap-1" style={{ fontSize: '12px' }}>
+                  <p className="flex items-center gap-1 text-red-500 font-medium mt-2" style={{ fontSize: '12px' }}>
                     ⚠ {errors.phone}
                   </p>
                 )}
               </div>
 
               {/* Info note */}
-              <div className="flex items-start gap-2.5 mb-6 px-3.5 py-3 rounded-xl rsvp-note">
-                <Info size={13} strokeWidth={2} color="#3b82f6" className="flex-shrink-0 mt-px" />
-                <p className="text-blue-600/80 leading-relaxed" style={{ fontSize: '12px' }}>
-                  Tin nhắn xác nhận kèm thông tin sự kiện sẽ được gửi tự động đến số của bạn.
+              <div className="flex items-start gap-3 mb-6 px-4 py-3.5 rounded-2xl rsvp-note">
+                <Info size={15} strokeWidth={2} color="#2563eb" className="flex-shrink-0 mt-px" />
+                <p className="text-blue-700 leading-relaxed" style={{ fontSize: '12.5px' }}>
+                  Tin nhắn xác nhận kèm chi tiết sự kiện sẽ được gửi tự động về số của bạn.
                 </p>
               </div>
 
@@ -860,25 +857,29 @@ export default function GraduationInvitation() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="rsvp-submit w-full py-3.5 rounded-xl font-black text-white tracking-[0.08em] flex items-center justify-center gap-2.5"
-                style={{ fontSize: 'clamp(13px, 1.6vw, 15px)' }}
+                className="rsvp-submit w-full py-4 rounded-2xl font-black text-white flex items-center justify-center gap-2.5 tracking-[0.05em]"
+                style={{ fontSize: '15px' }}
               >
                 {submitting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Đang xử lý...
                   </>
                 ) : (
                   <>
-                    <Send size={14} strokeWidth={2.5} color="white" />
+                    <Send size={16} strokeWidth={2.5} color="white" />
                     Hoàn tất &amp; Gửi xác nhận
                   </>
                 )}
               </button>
 
-              <p className="text-center text-slate-400 mt-4" style={{ fontSize: '11px' }}>
-                Nhấn vào vùng tối bên ngoài để đóng
-              </p>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-full mt-3 py-2.5 rounded-2xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all font-semibold"
+                style={{ fontSize: '13px' }}
+              >
+                Huỷ bỏ
+              </button>
             </div>
           </div>
         </div>
@@ -889,88 +890,101 @@ export default function GraduationInvitation() {
       ═══════════════════════════════════════════════════════ */}
       {showSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden success-overlay">
+
           {/* Confetti rain */}
           {CONFETTI.map(c => (
-            <div
-              key={c.id}
-              className="confetti-piece absolute"
+            <div key={c.id} className="confetti-piece absolute"
               style={{
-                left: `${c.left}%`,
-                top: '-24px',
-                width: `${c.w}px`,
-                height: `${c.h}px`,
+                left: `${c.left}%`, top: '-24px',
+                width: `${c.w}px`, height: `${c.h}px`,
                 backgroundColor: c.color,
-                borderRadius: c.isCircle ? '50%' : '2px',
+                borderRadius: c.isCircle ? '50%' : '3px',
                 transform: `rotate(${c.rotate}deg)`,
                 animationDelay: `${c.delay}s`,
                 animationDuration: `${c.dur}s`,
-              }}
-            />
+              }} />
           ))}
 
-          {/* Aurora glows */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px]"
-              style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.18) 0%, transparent 70%)' }} />
-            <div className="absolute bottom-0 right-0 w-80 h-80"
-              style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.14) 0%, transparent 70%)' }} />
+          {/* Background glow spots */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px]"
+              style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.22) 0%, transparent 65%)' }} />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px]"
+              style={{ background: 'radial-gradient(ellipse at 0% 100%, rgba(139,92,246,0.18) 0%, transparent 65%)' }} />
+            <div className="absolute top-1/2 right-0 w-[400px] h-[400px] -translate-y-1/2"
+              style={{ background: 'radial-gradient(ellipse at 100% 50%, rgba(6,182,212,0.12) 0%, transparent 65%)' }} />
           </div>
 
           {/* Center card */}
-          <div className="relative z-10 text-center px-6 py-10 max-w-[380px] mx-4 success-card rounded-3xl">
+          <div className="relative z-10 w-full max-w-[420px] mx-4 success-card rounded-3xl overflow-hidden">
 
-            {/* Animated checkmark */}
-            <div className="mx-auto mb-5 w-20 h-20 rounded-full flex items-center justify-center success-circle">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path
-                  d="M8 20 L16 28 L32 12"
-                  stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"
-                  className="success-check-path"
-                />
-              </svg>
-            </div>
+            {/* Top gradient bar */}
+            <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6,#f59e0b)' }} />
 
-            <div className="text-5xl mb-4 animate-bounce">🎉</div>
+            <div className="px-7 pt-8 pb-8 text-center">
 
-            <h2 className="text-white font-black tracking-tight mb-1"
-              style={{ fontSize: 'clamp(24px, 3.5vw, 30px)' }}>
-              Đã xác nhận!
-            </h2>
-            <p className="font-bold mb-1" style={{ color: '#93c5fd', fontSize: 'clamp(15px, 2vw, 18px)' }}>
-              Chào {successName}! 👋
-            </p>
-            <p className="text-slate-400 leading-relaxed mb-6" style={{ fontSize: '13.5px' }}>
-              SMS xác nhận đã được gửi về số điện thoại của bạn.
-            </p>
+              {/* Checkmark */}
+              <div className="mx-auto mb-5 w-24 h-24 rounded-full flex items-center justify-center success-circle">
+                <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+                  <path d="M10 25 L21 36 L40 14"
+                    stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"
+                    className="success-check-path" />
+                </svg>
+              </div>
 
-            {/* Event recap */}
-            <div className="success-event-card rounded-2xl p-5 text-left mb-6">
-              <p className="text-sky-300/60 font-bold tracking-[0.3em] uppercase mb-3" style={{ fontSize: '9px' }}>
-                Chi tiết sự kiện
+              {/* Emoji row */}
+              <div className="flex justify-center gap-2 mb-3" style={{ fontSize: '30px' }}>
+                <span className="animate-bounce" style={{ animationDelay: '0ms' }}>🎉</span>
+                <span className="animate-bounce" style={{ animationDelay: '120ms' }}>🎓</span>
+                <span className="animate-bounce" style={{ animationDelay: '240ms' }}>🎊</span>
+              </div>
+
+              <h2 className="text-white font-black leading-tight mb-1"
+                style={{ fontSize: 'clamp(24px, 4vw, 30px)' }}>
+                Đã xác nhận tham dự!
+              </h2>
+              <p className="font-extrabold mb-2" style={{ color: '#7dd3fc', fontSize: 'clamp(16px, 2.2vw, 20px)' }}>
+                Chào {successName}! 🥳
               </p>
-              {[
-                { icon: '📅', text: 'Thứ Hai, 06 tháng 04 năm 2026' },
-                { icon: '⏰', text: '15:00 chiều' },
-                { icon: '📍', text: 'Hội trường cơ sở Hóc Môn, HUFLIT' },
-              ].map(({ icon, text }) => (
-                <div key={text} className="flex items-center gap-3 mb-2.5 last:mb-0">
-                  <span style={{ fontSize: '16px' }}>{icon}</span>
-                  <span className="text-white/80 font-medium" style={{ fontSize: '13px' }}>{text}</span>
+              <p className="text-slate-400 leading-relaxed mb-7" style={{ fontSize: '13.5px' }}>
+                Tin nhắn xác nhận đã được gửi về<br className="hidden sm:block" />số điện thoại của bạn.
+              </p>
+
+              {/* Event recap card */}
+              <div className="success-event-card rounded-2xl p-5 text-left mb-7">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1 h-4 rounded-full flex-shrink-0"
+                    style={{ background: 'linear-gradient(to bottom,#3b82f6,#8b5cf6)' }} />
+                  <p className="text-slate-300 font-bold tracking-[0.3em] uppercase" style={{ fontSize: '9.5px' }}>
+                    Chi tiết sự kiện
+                  </p>
                 </div>
-              ))}
+                {[
+                  { icon: '📅', label: 'Ngày', text: 'Thứ Hai, 06/04/2026' },
+                  { icon: '⏰', label: 'Giờ',  text: '15:00 chiều' },
+                  { icon: '📍', label: 'Nơi',  text: 'Hội trường Hóc Môn, HUFLIT' },
+                ].map(({ icon, label, text }) => (
+                  <div key={label} className="flex items-start gap-3 mb-3 last:mb-0">
+                    <span className="flex-shrink-0 mt-0.5" style={{ fontSize: '17px' }}>{icon}</span>
+                    <div>
+                      <span className="text-slate-500 font-bold uppercase tracking-wider" style={{ fontSize: '9.5px' }}>
+                        {label}
+                      </span>
+                      <p className="text-white font-semibold mt-0.5" style={{ fontSize: '14px' }}>{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Close button */}
+              <button
+                onClick={() => setShowSuccess(false)}
+                className="w-full py-3.5 rounded-2xl font-black text-white tracking-[0.06em] success-close-btn"
+                style={{ fontSize: '15px' }}
+              >
+                Tuyệt vời, hẹn gặp bạn! 🎓
+              </button>
             </div>
-
-            <p className="text-slate-500 mb-5" style={{ fontSize: '13px' }}>
-              Hẹn gặp bạn tại lễ tốt nghiệp! 🎓
-            </p>
-
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="px-8 py-2.5 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/50 transition-all font-semibold"
-              style={{ fontSize: '13px' }}
-            >
-              Đóng
-            </button>
           </div>
         </div>
       )}
