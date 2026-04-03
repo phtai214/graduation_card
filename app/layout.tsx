@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Thiệp Mời Tốt Nghiệp - Nguyễn Phước Tài",
   description: "Thiệp mời lễ tốt nghiệp 2026 - Trường Đại học Ngoại ngữ - Tin học TP.HCM",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/icon.png',    sizes: '32x32', type: 'image/png' },
+    ],
+    apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+  },
 };
 
 export default function RootLayout({
