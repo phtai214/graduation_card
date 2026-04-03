@@ -110,7 +110,7 @@ function buildEmailHtml(name: string, hostEmail: string): string {
           &ldquo;4 năm code, bug, cà phê và deadline 3AM...&rdquo;
         </p>
         <p style="color:#1e293b;font-size:15px;font-weight:800;margin:0;">
-          Hôm nay mình chính thức PASS &amp; BYE UNI. Bạn là một phần của hành trình đó! 🚀
+          Hôm nay mình chính thức PASS &amp; BYE UNI. Bạn là một phần của hành trình đó! 
         </p>
       </div>
     </div>
@@ -169,20 +169,20 @@ export async function POST(req: Request) {
 
       /* Email xác nhận gửi đến khách */
       await transporter.sendMail({
-        from   : `"Nguyen Phuoc Tai - Le Tot Nghiep 2026" <${gmailUser}>`,
-        to     : email,
+        from: `"Nguyen Phuoc Tai - Le Tot Nghiep 2026" <${gmailUser}>`,
+        to: email,
         subject: '[Xac nhan] Tham du Le Tot Nghiep - Nguyen Phuoc Tai 2026',
-        html   : buildEmailHtml(name, gmailUser),
+        html: buildEmailHtml(name, gmailUser),
       });
 
       console.log(`[RSVP] Confirmation email sent -> ${email} (${name})`);
 
       /* Thông báo cho host */
       await transporter.sendMail({
-        from   : `"RSVP Bot" <${gmailUser}>`,
-        to     : gmailUser,
+        from: `"RSVP Bot" <${gmailUser}>`,
+        to: gmailUser,
         subject: `[RSVP] ${name} vua xac nhan tham du!`,
-        html   : `<p><b>${name}</b> (<a href="mailto:${email}">${email}</a>) vừa xác nhận tham dự Lễ Tốt Nghiệp của bạn! 🎉</p>`,
+        html: `<p><b>${name}</b> (<a href="mailto:${email}">${email}</a>) vừa xác nhận tham dự Lễ Tốt Nghiệp của bạn! 🎉</p>`,
       });
 
       console.log(`[RSVP] Host notification sent -> ${gmailUser}`);
