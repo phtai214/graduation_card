@@ -342,7 +342,7 @@ function CountdownTimer() {
     <div className="w-full mt-5">
       <div className="flex items-center gap-2 mb-2.5">
         <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(96,165,250,0.2))' }} />
-        <span className="text-sky-300/45 font-bold tracking-[0.5em] uppercase" style={{ fontSize: '7px' }}>ĐẾM NGƯỢC</span>
+        <span className="text-sky-300/45 font-bold tracking-[0.5em] uppercase" style={{ fontSize: '11px' }}>ĐẾM NGƯỢC</span>
         <div className="flex-1 h-px" style={{ background: 'linear-gradient(to left, transparent, rgba(96,165,250,0.2))' }} />
       </div>
       <div className="grid grid-cols-4 gap-1.5">
@@ -538,11 +538,11 @@ export default function GraduationInvitation() {
                   {/* Live badge */}
                   <div className="flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full live-badge">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                    <span className="text-red-300/90 font-bold tracking-[0.38em]" style={{ fontSize: '8px' }}>
+                    <span className="text-red-300/90 font-bold tracking-[0.38em]" style={{ fontSize: '10px' }}>
                       SẮP DIỄN RA
                     </span>
                   </div>
-                  <p className="text-sky-300/50 text-[9px] font-bold tracking-[0.65em] uppercase mb-3">
+                  <p className="text-sky-300/50 text-[12px] font-bold tracking-[0.65em] uppercase mb-3">
                     G R A D U A T I O N
                   </p>
                   <h1 className="text-white font-black leading-[1.05] tracking-[0.05em] text-center hero-title">
@@ -743,7 +743,6 @@ export default function GraduationInvitation() {
                   <span className="flex items-center justify-center gap-3">
                     <span style={{ fontSize: '1.25em' }}>🎉</span>
                     <span>XÁC NHẬN THAM GIA</span>
-                    {/* <span style={{ fontSize: '1.25em' }}>🎊</span> */}
                   </span>
                 </button>
 
@@ -751,7 +750,7 @@ export default function GraduationInvitation() {
                 <div className="flex items-center gap-3 -mt-1">
                   <div className="flex-1 h-px rounded-full"
                     style={{ background: 'linear-gradient(to right, transparent, rgba(37,99,235,0.18))' }} />
-                  <p className="text-slate-400 tracking-[0.22em] text-center flex-shrink-0"
+                  <p className="text-slate-700 tracking-[0.42em] text-center flex-shrink-0"
                     style={{ fontSize: 'clamp(9px, 1.05vw, 10.5px)' }}>
                     ✦ Với tất cả niềm tự hào · Nguyễn Phước Tài ✦
                   </p>
