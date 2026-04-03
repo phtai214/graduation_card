@@ -621,8 +621,8 @@ export default function GraduationInvitation() {
                 <div>
                   <div className="flex items-center gap-2 mb-2.5">
                     <div className="h-[2.5px] w-5 rounded-full"
-                      style={{ background: 'linear-gradient(to right, #3b82f6, #8b5cf6)' }} />
-                    <p className="text-blue-500/55 font-black tracking-[0.55em] uppercase"
+                      style={{ background: 'linear-gradient(to right,rgb(46, 125, 253), #8b5cf6)' }} />
+                    <p className="text-blue-700/55 font-black tracking-[0.65em] uppercase"
                       style={{ fontSize: 'clamp(8px, 1.1vw, 10px)' }}>
                       Trân trọng kính mời
                     </p>
@@ -742,8 +742,8 @@ export default function GraduationInvitation() {
                   style={{ fontSize: 'clamp(13px, 1.7vw, 17px)' }}>
                   <span className="flex items-center justify-center gap-3">
                     <span style={{ fontSize: '1.25em' }}>🎉</span>
-                    <span>XÁC NHẬN SẼ THAM GIA</span>
-                    <span style={{ fontSize: '1.25em' }}>🎊</span>
+                    <span>XÁC NHẬN THAM GIA</span>
+                    {/* <span style={{ fontSize: '1.25em' }}>🎊</span> */}
                   </span>
                 </button>
 
@@ -969,8 +969,8 @@ export default function GraduationInvitation() {
                 </div>
                 {[
                   { icon: '📅', label: 'Ngày', text: 'Thứ Hai, 06/04/2026' },
-                  { icon: '⏰', label: 'Giờ',  text: '15:00 chiều' },
-                  { icon: '📍', label: 'Nơi',  text: 'Hội trường Hóc Môn, HUFLIT' },
+                  { icon: '⏰', label: 'Giờ', text: '15:00 chiều' },
+                  { icon: '📍', label: 'Nơi', text: 'Hội trường Hóc Môn, HUFLIT' },
                 ].map(({ icon, label, text }) => (
                   <div key={label} className="flex items-start gap-3 mb-3 last:mb-0">
                     <span className="flex-shrink-0 mt-0.5" style={{ fontSize: '17px' }}>{icon}</span>
