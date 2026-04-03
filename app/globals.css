@@ -25,6 +25,13 @@
   50%       { box-shadow: 0 6px 34px rgba(37,99,235,0.65), 0 14px 52px rgba(124,58,237,0.35); }
 }
 
+@keyframes cta-shimmer {
+  0%   { transform: translateX(-130%) skewX(-22deg); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(270%) skewX(-22deg); opacity: 0; }
+}
+
 @keyframes badge-amber-glow {
   0%, 100% { box-shadow: 0 0 12px rgba(251,191,36,0.22), inset 0 0 12px rgba(251,191,36,0.08); }
   50%       { box-shadow: 0 0 24px rgba(251,191,36,0.40), inset 0 0 18px rgba(251,191,36,0.14); }
@@ -188,27 +195,55 @@
    EVENT INFO CARDS
 ═══════════════════════════════════════ */
 .event-card {
-  background: #fafcff;
-  border: 1.5px solid rgba(37,99,235,0.1);
-  box-shadow: 0 2px 14px rgba(37,99,235,0.06);
-  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  box-shadow: 0 4px 22px rgba(37,99,235,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  transition: transform 0.25s, box-shadow 0.25s;
 }
 .event-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(37,99,235,0.12);
-  border-color: rgba(37,99,235,0.24);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 40px rgba(37,99,235,0.14);
 }
+
+/* Blue / time card */
+.event-time {
+  background: linear-gradient(150deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: rgba(37,99,235,0.16);
+}
+.event-time::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3.5px;
+  background: linear-gradient(90deg, #1d4ed8 0%, #38bdf8 100%);
+}
+
+/* Purple / location card */
+.event-location {
+  background: linear-gradient(150deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: rgba(124,58,237,0.16);
+}
+.event-location::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3.5px;
+  background: linear-gradient(90deg, #7c3aed 0%, #e879f9 100%);
+}
+
+/* Solid gradient icon containers */
 .icon-time {
-  background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(59,130,246,0.05));
-  border: 1.5px solid rgba(37,99,235,0.22);
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  box-shadow: 0 4px 14px rgba(37,99,235,0.42);
 }
 .icon-location {
-  background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(139,92,246,0.05));
-  border: 1.5px solid rgba(124,58,237,0.22);
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  box-shadow: 0 4px 14px rgba(124,58,237,0.42);
 }
+
+/* Solid time pill */
 .time-pill {
-  background: rgba(14,165,233,0.07);
-  border: 1px solid rgba(14,165,233,0.18);
+  background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+  box-shadow: 0 3px 10px rgba(3,105,161,0.35);
 }
 
 /* ═══════════════════════════════════════
@@ -221,10 +256,25 @@
   position: relative;
   overflow: hidden;
 }
+/* Top-left inner highlight */
 .cta-button::before {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 55%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 50%);
+  pointer-events: none;
+}
+/* Shimmer sweep */
+.cta-button::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: 0;
+  width: 40%; height: 200%;
+  background: linear-gradient(105deg,
+    transparent 15%,
+    rgba(255,255,255,0.30) 50%,
+    transparent 85%);
+  animation: cta-shimmer 4s ease-in-out infinite;
+  animation-delay: 1.2s;
   pointer-events: none;
 }
 .cta-button:hover  { filter: brightness(1.12); transform: translateY(-2.5px); }

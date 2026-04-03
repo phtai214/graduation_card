@@ -19,7 +19,7 @@ const STAR_VERT = /* glsl */`
     vBright = aBright;
     float y = mod(position.y - uTime * aSpeed + 82.0, 164.0) - 82.0;
     vec4 mv = modelViewMatrix * vec4(position.x, y, position.z, 1.0);
-    gl_PointSize = aSize * (195.0 / -mv.z);
+    gl_PointSize = aSize * (225.0 / -mv.z);
     gl_Position  = projectionMatrix * mv;
   }`;
 const STAR_FRAG = /* glsl */`
@@ -28,9 +28,27 @@ const STAR_FRAG = /* glsl */`
     vec2 uv = gl_PointCoord - 0.5;
     float d = length(uv);
     if (d > 0.5) discard;
-    float g = exp(-d * 10.0) + exp(-d * 3.8) * 0.28;
-    float a = g * vBright * 0.86;
-    vec3 col = mix(vec3(0.14, 0.42, 0.92), vec3(0.80, 0.90, 1.0), vBright * 0.55);
+
+    /* Circular core glow */
+    float core = exp(-d * 9.5) + exp(-d * 3.2) * 0.35;
+
+    /* 4-spike cross rays + 4 diagonal rays = 8-pointed star burst */
+    float angle = atan(uv.y, uv.x);
+    float ray4  = pow(abs(cos(angle * 2.0)), 5.5);           /* cross +  */
+    float ray4b = pow(abs(cos(angle * 2.0 + 0.7854)), 7.0);  /* diagonal x */
+    float rays  = (ray4 * 0.72 + ray4b * 0.28)
+                  * exp(-d * 3.8)
+                  * (0.30 + vBright * 0.70);
+
+    float g = core + rays;
+    float a = g * vBright * 0.94;
+
+    /* White-hot center → blue rays → deep-blue outer */
+    vec3 col = mix(vec3(0.12, 0.38, 0.92), vec3(0.82, 0.94, 1.0),
+                   core * 0.75 + vBright * 0.25);
+    col = mix(col, vec3(1.0), exp(-d * 24.0) * 0.55); /* bright white core */
+    col += rays * vec3(0.50, 0.72, 1.0) * 0.30;        /* blue ray tint     */
+
     gl_FragColor = vec4(col, a);
   }`;
 
@@ -102,7 +120,7 @@ const GRID_FRAG = /* glsl */`
 
 function StarRain() {
   const matRef = useRef<THREE.ShaderMaterial>(null!);
-  const N = 3800;
+  const N = 5500;
   const geo = useMemo(() => {
     const p = new Float32Array(N * 3), s = new Float32Array(N),
       b = new Float32Array(N), z = new Float32Array(N);
@@ -112,7 +130,7 @@ function StarRain() {
       p[i * 3 + 2] = -2 - Math.random() * 28;
       s[i] = .55 + Math.random() * 3.1;
       b[i] = .15 + Math.random() * .85;
-      z[i] = 1.4 + Math.random() * 4.0;
+      z[i] = 2.0 + Math.random() * 5.2;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(p, 3));
@@ -547,46 +565,46 @@ export default function GraduationInvitation() {
                 <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
 
                   {/* Date */}
-                  <div className="event-card rounded-xl sm:rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center icon-time">
-                        <Calendar size={16} strokeWidth={2} color="#2563eb" />
+                  <div className="event-card event-time rounded-xl sm:rounded-2xl p-4 sm:p-5">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 icon-time">
+                        <Calendar size={17} strokeWidth={2} color="white" />
                       </div>
                       <span className="text-blue-600 font-black tracking-[0.35em] uppercase"
                         style={{ fontSize: 'clamp(8px, 1vw, 9.5px)' }}>Thời gian</span>
                     </div>
-                    <p className="text-slate-700 font-extrabold leading-tight"
-                      style={{ fontSize: 'clamp(13px, 1.6vw, 16px)' }}>Thứ Hai</p>
-                    <p className="text-blue-700 font-black leading-tight tracking-tight mt-0.5"
-                      style={{ fontSize: 'clamp(17px, 2.2vw, 22px)' }}>
+                    <p className="text-slate-400 font-semibold leading-none"
+                      style={{ fontSize: 'clamp(11px, 1.3vw, 12.5px)' }}>Thứ Hai</p>
+                    <p className="text-blue-700 font-black leading-tight tracking-tight mt-1"
+                      style={{ fontSize: 'clamp(20px, 2.6vw, 26px)' }}>
                       06 · 04 · 2026
                     </p>
-                    <div className="flex items-center gap-2 mt-2.5 px-2.5 sm:px-3 py-1.5 rounded-lg w-fit time-pill">
-                      <Clock size={12} strokeWidth={2} color="#0ea5e9" />
-                      <span className="text-sky-700 font-bold"
+                    <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-full w-fit time-pill">
+                      <Clock size={12} strokeWidth={2.5} color="white" />
+                      <span className="text-white font-extrabold"
                         style={{ fontSize: 'clamp(11px, 1.4vw, 13px)' }}>15:00 chiều</span>
                     </div>
                   </div>
 
                   {/* Location */}
-                  <div className="event-card rounded-xl sm:rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center icon-location">
-                        <MapPin size={16} strokeWidth={2} color="#7c3aed" />
+                  <div className="event-card event-location rounded-xl sm:rounded-2xl p-4 sm:p-5">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 icon-location">
+                        <MapPin size={17} strokeWidth={2} color="white" />
                       </div>
                       <span className="text-violet-600 font-black tracking-[0.35em] uppercase"
                         style={{ fontSize: 'clamp(8px, 1vw, 9.5px)' }}>Địa điểm</span>
                     </div>
                     <div className="flex items-start gap-1.5">
                       <Building2 size={12} strokeWidth={2} color="#7c3aed" className="flex-shrink-0 mt-0.5" />
-                      <p className="text-slate-700 font-extrabold leading-tight"
+                      <p className="text-slate-800 font-extrabold leading-tight"
                         style={{ fontSize: 'clamp(12px, 1.5vw, 15px)' }}>
                         Hội trường cơ sở Hóc Môn
                       </p>
                     </div>
-                    <p className="text-violet-500 font-bold mt-0.5"
+                    <p className="text-violet-600 font-bold mt-0.5"
                       style={{ fontSize: 'clamp(12px, 1.5vw, 14px)' }}>HUFLIT</p>
-                    <p className="text-slate-600 mt-1.5 leading-relaxed"
+                    <p className="text-slate-500 mt-1.5 leading-relaxed"
                       style={{ fontSize: 'clamp(10.5px, 1.3vw, 12px)' }}>
                       806 Lê Quang Đạo<br />
                       Xã Hóc Môn, TP. Hồ Chí Minh
@@ -596,16 +614,26 @@ export default function GraduationInvitation() {
 
                 {/* ── CTA ── */}
                 <button className="cta-button w-full rounded-xl sm:rounded-2xl font-black text-white
-                                   tracking-wide py-3.5 sm:py-4"
-                  style={{ fontSize: 'clamp(14px, 1.8vw, 18px)' }}>
-                  🎉&nbsp;&nbsp;XÁC NHẬN SẼ THAM GIA
+                                   tracking-[0.12em] py-4 sm:py-[18px]"
+                  style={{ fontSize: 'clamp(13px, 1.7vw, 17px)' }}>
+                  <span className="flex items-center justify-center gap-3">
+                    <span style={{ fontSize: '1.25em' }}>🎉</span>
+                    <span>XÁC NHẬN SẼ THAM GIA</span>
+                    <span style={{ fontSize: '1.25em' }}>🎊</span>
+                  </span>
                 </button>
 
                 {/* Footer */}
-                <p className="text-center text-slate-600 tracking-[0.22em] -mt-0.5"
-                  style={{ fontSize: 'clamp(10px, 1.2vw, 11.5px)' }}>
-                  — Với tất cả niềm tự hào · Nguyễn Phước Tài —
-                </p>
+                <div className="flex items-center gap-3 -mt-1">
+                  <div className="flex-1 h-px rounded-full"
+                    style={{ background: 'linear-gradient(to right, transparent, rgba(37,99,235,0.18))' }} />
+                  <p className="text-slate-400 tracking-[0.22em] text-center flex-shrink-0"
+                    style={{ fontSize: 'clamp(9px, 1.05vw, 10.5px)' }}>
+                    ✦ Với tất cả niềm tự hào · Nguyễn Phước Tài ✦
+                  </p>
+                  <div className="flex-1 h-px rounded-full"
+                    style={{ background: 'linear-gradient(to left, transparent, rgba(37,99,235,0.18))' }} />
+                </div>
               </div>
 
             </div>
