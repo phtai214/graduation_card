@@ -3,7 +3,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Suspense, useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
-import { Calendar, Clock, MapPin, Building2, User, Phone, Info, Send, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, Building2, User, Mail, Info, Send, X, Navigation } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
    GLSL SHADERS
@@ -349,7 +349,7 @@ function CountdownTimer() {
         {units.map(({ v, l }, idx) => (
           <div key={l} className="countdown-digit flex flex-col items-center py-2.5 px-1 rounded-xl relative">
             {idx < 3 && (
-              <span className="absolute -right-1 top-[38%] text-sky-300/40 font-black text-base leading-none z-10">:</span>
+              <span className="absolute -right-1 top-[38%] text-sky-300/40 font-black text-base leading-none z-10"></span>
             )}
             <span className="text-white font-black tabular-nums leading-none"
               style={{ fontSize: 'clamp(16px, 2.4vw, 22px)' }}>
@@ -431,18 +431,18 @@ const LOG = [
 
 export default function GraduationInvitation() {
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: '', phone: '' });
-  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const [form, setForm] = useState({ name: '', email: '' });
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successName, setSuccessName] = useState('');
 
   const validate = () => {
-    const e: { name?: string; phone?: string } = {};
+    const e: { name?: string; email?: string } = {};
     if (!form.name.trim()) e.name = 'Vui lòng nhập họ và tên';
-    const ph = form.phone.replace(/\s/g, '');
-    if (!ph) e.phone = 'Vui lòng nhập số điện thoại';
-    else if (!/^0[3-9]\d{8}$/.test(ph)) e.phone = 'Số điện thoại chưa đúng định dạng (VD: 0912345678)';
+    const em = form.email.trim();
+    if (!em) e.email = 'Vui lòng nhập địa chỉ email';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) e.email = 'Địa chỉ email không hợp lệ';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -454,7 +454,7 @@ export default function GraduationInvitation() {
       await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name.trim(), phone: form.phone.replace(/\s/g, '') }),
+        body: JSON.stringify({ name: form.name.trim(), email: form.email.trim() }),
       });
     } catch {
       /* silent — success UI shows regardless */
@@ -464,7 +464,7 @@ export default function GraduationInvitation() {
     const parts = form.name.trim().split(' ');
     setSuccessName(parts[parts.length - 1] || form.name.trim());
     setShowSuccess(true);
-    setForm({ name: '', phone: '' });
+    setForm({ name: '', email: '' });
     setErrors({});
   };
 
@@ -722,6 +722,15 @@ export default function GraduationInvitation() {
                       806 Lê Quang Đạo<br />
                       Xã Hóc Môn, TP. Hồ Chí Minh
                     </p>
+                    <a
+                      href="https://maps.app.goo.gl/kT2QmrLRHCmfRYYq6"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="directions-btn inline-flex items-center gap-1.5 mt-3"
+                    >
+                      <Navigation size={11} strokeWidth={2.5} />
+                      <span>Chỉ đường</span>
+                    </a>
                   </div>
                 </div>
 
@@ -797,7 +806,7 @@ export default function GraduationInvitation() {
                     Xác nhận tham dự
                   </h3>
                   <p className="text-slate-500 mt-1 leading-snug text-sm">
-                    Điền thông tin để nhận SMS xác nhận kèm<br />thông tin sự kiện 📱
+                    Điền thông tin để nhận email xác nhận kèm<br />chi tiết &amp; đường dẫn bản đồ 📧
                   </p>
                 </div>
               </div>
@@ -823,24 +832,23 @@ export default function GraduationInvitation() {
                 )}
               </div>
 
-              {/* Phone */}
+              {/* Email */}
               <div className="mb-5">
                 <label className="flex items-center gap-1.5 mb-2 font-bold text-slate-700" style={{ fontSize: '13px' }}>
-                  <Phone size={13} strokeWidth={2.5} color="#6366f1" />
-                  Số điện thoại
+                  <Mail size={13} strokeWidth={2.5} color="#6366f1" />
+                  Địa chỉ email
                 </label>
                 <input
-                  type="tel"
-                  value={form.phone}
-                  onChange={e => { setForm(p => ({ ...p, phone: e.target.value })); setErrors(p => ({ ...p, phone: '' })); }}
-                  placeholder="0912 345 678"
-                  className={`rsvp-input w-full px-4 py-3.5 rounded-2xl font-medium text-slate-800 outline-none${errors.phone ? ' rsvp-input-err' : ''}`}
+                  type="email"
+                  value={form.email}
+                  onChange={e => { setForm(p => ({ ...p, email: e.target.value })); setErrors(p => ({ ...p, email: '' })); }}
+                  placeholder="example@gmail.com"
+                  className={`rsvp-input w-full px-4 py-3.5 rounded-2xl font-medium text-slate-800 outline-none${errors.email ? ' rsvp-input-err' : ''}`}
                   style={{ fontSize: '15px' }}
-                  maxLength={11}
                 />
-                {errors.phone && (
+                {errors.email && (
                   <p className="flex items-center gap-1 text-red-500 font-medium mt-2" style={{ fontSize: '12px' }}>
-                    ⚠ {errors.phone}
+                    ⚠ {errors.email}
                   </p>
                 )}
               </div>
@@ -849,7 +857,7 @@ export default function GraduationInvitation() {
               <div className="flex items-start gap-3 mb-6 px-4 py-3.5 rounded-2xl rsvp-note">
                 <Info size={15} strokeWidth={2} color="#2563eb" className="flex-shrink-0 mt-px" />
                 <p className="text-blue-700 leading-relaxed" style={{ fontSize: '12.5px' }}>
-                  Tin nhắn xác nhận kèm chi tiết sự kiện sẽ được gửi tự động về số của bạn.
+                  Email xác nhận kèm chi tiết sự kiện &amp; đường dẫn bản đồ sẽ gửi tự động về hộp thư của bạn.
                 </p>
               </div>
 
@@ -947,7 +955,7 @@ export default function GraduationInvitation() {
                 Chào {successName}! 🥳
               </p>
               <p className="text-slate-400 leading-relaxed mb-7" style={{ fontSize: '13.5px' }}>
-                Tin nhắn xác nhận đã được gửi về<br className="hidden sm:block" />số điện thoại của bạn.
+                Email xác nhận đã được gửi đến<br className="hidden sm:block" />hộp thư của bạn. Nhớ kiểm tra spam nhé! 📬
               </p>
 
               {/* Event recap card */}
