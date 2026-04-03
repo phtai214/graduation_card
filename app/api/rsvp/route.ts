@@ -170,9 +170,9 @@ export async function POST(req: Request) {
       const resend = new Resend(apiKey);
 
       const { data, error } = await resend.emails.send({
-        from    : `Nguyen Phuoc Tai - Le Tot Nghiep <onboarding@resend.dev>`,
-        to      : [email],
-        reply_to: HOST_EMAIL,
+        from   : `Nguyen Phuoc Tai - Le Tot Nghiep <onboarding@resend.dev>`,
+        to     : [email],
+        replyTo: HOST_EMAIL,
         subject,
         html,
       });
