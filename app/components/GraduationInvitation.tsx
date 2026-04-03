@@ -29,25 +29,25 @@ const STAR_FRAG = /* glsl */`
     float d = length(uv);
     if (d > 0.5) discard;
 
-    /* Circular core glow */
-    float core = exp(-d * 9.5) + exp(-d * 3.2) * 0.35;
+    /* Circular core glow — brighter */
+    float core = exp(-d * 7.5) + exp(-d * 2.6) * 0.55;
 
     /* 4-spike cross rays + 4 diagonal rays = 8-pointed star burst */
     float angle = atan(uv.y, uv.x);
-    float ray4  = pow(abs(cos(angle * 2.0)), 5.5);           /* cross +  */
-    float ray4b = pow(abs(cos(angle * 2.0 + 0.7854)), 7.0);  /* diagonal x */
-    float rays  = (ray4 * 0.72 + ray4b * 0.28)
-                  * exp(-d * 3.8)
-                  * (0.30 + vBright * 0.70);
+    float ray4  = pow(abs(cos(angle * 2.0)), 4.5);
+    float ray4b = pow(abs(cos(angle * 2.0 + 0.7854)), 5.5);
+    float rays  = (ray4 * 0.80 + ray4b * 0.38)
+                  * exp(-d * 2.8)
+                  * (0.42 + vBright * 0.90);
 
     float g = core + rays;
-    float a = g * vBright * 0.94;
+    float a = min(g * vBright * 1.05, 1.0);
 
-    /* White-hot center → blue rays → deep-blue outer */
-    vec3 col = mix(vec3(0.12, 0.38, 0.92), vec3(0.82, 0.94, 1.0),
-                   core * 0.75 + vBright * 0.25);
-    col = mix(col, vec3(1.0), exp(-d * 24.0) * 0.55); /* bright white core */
-    col += rays * vec3(0.50, 0.72, 1.0) * 0.30;        /* blue ray tint     */
+    /* White-hot center → vibrant blue rays */
+    vec3 col = mix(vec3(0.10, 0.35, 0.95), vec3(0.85, 0.95, 1.0),
+                   core * 0.80 + vBright * 0.28);
+    col = mix(col, vec3(1.0), exp(-d * 16.0) * 0.85);
+    col += rays * vec3(0.45, 0.70, 1.0) * 0.45;
 
     gl_FragColor = vec4(col, a);
   }`;
@@ -83,17 +83,21 @@ const COMET_FRAG = /* glsl */`
   void main() {
     float cx = vUv.x - 0.5;
     float t  = vUv.y;
-    float halfW = mix(0.04, 0.50, pow(t, 0.55));
-    float body  = smoothstep(halfW, halfW * 0.35, abs(cx));
-    float bright = pow(t, 0.28);
-    float headGlow = exp(-length(vec2(cx * 6.0, (t - 1.0) * 9.0)));
-    float alpha = (body * bright + headGlow * 0.65) * uAlpha;
+    float halfW = mix(0.04, 0.52, pow(t, 0.48));
+    float body  = smoothstep(halfW, halfW * 0.28, abs(cx));
+    float bright = pow(t, 0.22);
+    /* Bigger, more luminous head */
+    float headGlow = exp(-length(vec2(cx * 4.0, (t - 1.0) * 6.5)));
+    /* Extra outer halo ring around head */
+    float halo     = exp(-length(vec2(cx * 7.0, (t - 1.0) * 10.0))) * 0.6;
+    float alpha = (body * bright + headGlow * 1.25 + halo * 0.55) * uAlpha;
     alpha *= smoothstep(0.0, 0.04, t);
-    vec3 tailCol = vec3(0.18, 0.50, 0.95);
-    vec3 coreCol = vec3(0.88, 0.96, 1.00);
-    vec3 color   = mix(tailCol, coreCol, pow(t, 0.42));
-    color = mix(color, vec3(1.0), headGlow * 0.45);
-    gl_FragColor = vec4(color, clamp(alpha, 0.0, 0.96));
+    vec3 tailCol = vec3(0.08, 0.38, 1.00);
+    vec3 coreCol = vec3(0.90, 0.97, 1.00);
+    vec3 color   = mix(tailCol, coreCol, pow(t, 0.36));
+    color = mix(color, vec3(1.0), headGlow * 0.80);
+    color += vec3(0.30, 0.62, 1.0) * headGlow * 0.55;
+    gl_FragColor = vec4(color, clamp(alpha, 0.0, 0.98));
   }`;
 
 const GRID_VERT = /* glsl */`
@@ -120,17 +124,17 @@ const GRID_FRAG = /* glsl */`
 
 function StarRain() {
   const matRef = useRef<THREE.ShaderMaterial>(null!);
-  const N = 5500;
+  const N = 9500;
   const geo = useMemo(() => {
     const p = new Float32Array(N * 3), s = new Float32Array(N),
       b = new Float32Array(N), z = new Float32Array(N);
     for (let i = 0; i < N; i++) {
-      p[i * 3] = (Math.random() - .5) * 120;
+      p[i * 3] = (Math.random() - .5) * 130;
       p[i * 3 + 1] = (Math.random() * 2 - 1) * 82;
       p[i * 3 + 2] = -2 - Math.random() * 28;
-      s[i] = .55 + Math.random() * 3.1;
-      b[i] = .15 + Math.random() * .85;
-      z[i] = 2.0 + Math.random() * 5.2;
+      s[i] = .65 + Math.random() * 3.6;
+      b[i] = .25 + Math.random() * .85;
+      z[i] = 4.0 + Math.random() * 10.0;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(p, 3));
@@ -177,17 +181,17 @@ function Comet({ offset }: { offset: number }) {
   const ref = useRef<THREE.Mesh>(null!);
   const matRef = useRef<THREE.ShaderMaterial>(null!);
   const cfg = useMemo(() => {
-    const deg = 28 + Math.random() * 25;
+    const deg = 25 + Math.random() * 30;
     const rad = deg * Math.PI / 180;
     return {
-      sx: 18 + Math.random() * 45, sy: 14 + Math.random() * 26,
+      sx: 18 + Math.random() * 50, sy: 14 + Math.random() * 28,
       vx: -Math.cos(rad), vy: -Math.sin(rad),
-      spd: 10 + Math.random() * 13,
-      len: 5.5 + Math.random() * 9,
-      w: 0.08 + Math.random() * 0.08,
+      spd: 13 + Math.random() * 15,
+      len: 11 + Math.random() * 14,
+      w: 0.22 + Math.random() * 0.22,
       rot: -(Math.PI / 2 - rad),
-      delay: offset * 3.8 + Math.random() * 4.5,
-      period: 10 + Math.random() * 10,
+      delay: offset * 2.8 + Math.random() * 3.5,
+      period: 8 + Math.random() * 9,
     };
   }, [offset]);
   useFrame(({ clock }) => {
@@ -217,20 +221,23 @@ type CubeCfg = {
 };
 
 const CUBE_CFGS: CubeCfg[] = [
-  // Close cubes — visible on sides
-  { pos: [-23, 5, -11], size: 1.8, rx: 0.38, ry: 0.52, rz: 0.12, drift: 0.40, color: '#3b82f6', opacity: 0.28 },
-  { pos: [23, 8, -13], size: 1.5, rx: -0.22, ry: 0.44, rz: 0.30, drift: 0.48, color: '#8b5cf6', opacity: 0.25 },
-  { pos: [-19, -9, -14], size: 2.0, rx: 0.52, ry: -0.30, rz: 0.42, drift: 0.52, color: '#06b6d4', opacity: 0.22 },
-  { pos: [20, -7, -15], size: 1.3, rx: 0.65, ry: 0.42, rz: -0.32, drift: 0.62, color: '#60a5fa', opacity: 0.30 },
+  // Close cubes — clearly visible on sides
+  { pos: [-23, 5, -11], size: 1.8, rx: 0.38, ry: 0.52, rz: 0.12, drift: 0.40, color: '#60a5fa', opacity: 0.70 },
+  { pos: [23, 8, -13],  size: 1.5, rx: -0.22, ry: 0.44, rz: 0.30, drift: 0.48, color: '#a78bfa', opacity: 0.65 },
+  { pos: [-19, -9, -14], size: 2.0, rx: 0.52, ry: -0.30, rz: 0.42, drift: 0.52, color: '#22d3ee', opacity: 0.60 },
+  { pos: [20, -7, -15], size: 1.3, rx: 0.65, ry: 0.42, rz: -0.32, drift: 0.62, color: '#93c5fd', opacity: 0.72 },
+  // Extra close cubes
+  { pos: [-26, 2, -9],  size: 1.0, rx: 0.70, ry: 0.35, rz: 0.55, drift: 0.55, color: '#818cf8', opacity: 0.68 },
+  { pos: [26, -3, -10], size: 1.2, rx: 0.30, ry: 0.60, rz: -0.25, drift: 0.50, color: '#38bdf8', opacity: 0.65 },
   // Mid cubes
-  { pos: [6, 14, -22], size: 3.0, rx: 0.16, ry: 0.26, rz: 0.09, drift: 0.23, color: '#3b82f6', opacity: 0.14 },
-  { pos: [-15, 11, -24], size: 2.5, rx: 0.21, ry: 0.19, rz: 0.23, drift: 0.29, color: '#a78bfa', opacity: 0.16 },
-  { pos: [23, -4, -20], size: 2.8, rx: 0.13, ry: 0.36, rz: -0.16, drift: 0.19, color: '#38bdf8', opacity: 0.15 },
-  { pos: [-6, -12, -18], size: 1.6, rx: 0.58, ry: 0.38, rz: 0.28, drift: 0.58, color: '#7dd3fc', opacity: 0.20 },
-  // Background cubes — large, faint
-  { pos: [-10, 7, -34], size: 5.5, rx: 0.06, ry: 0.13, rz: 0.07, drift: 0.12, color: '#3b82f6', opacity: 0.07 },
-  { pos: [12, -9, -30], size: 4.5, rx: 0.08, ry: 0.11, rz: 0.08, drift: 0.15, color: '#8b5cf6', opacity: 0.08 },
-  { pos: [0, 18, -38], size: 7.0, rx: 0.04, ry: 0.09, rz: 0.05, drift: 0.09, color: '#60a5fa', opacity: 0.05 },
+  { pos: [6, 14, -22],  size: 3.0, rx: 0.16, ry: 0.26, rz: 0.09, drift: 0.23, color: '#3b82f6', opacity: 0.48 },
+  { pos: [-15, 11, -24], size: 2.5, rx: 0.21, ry: 0.19, rz: 0.23, drift: 0.29, color: '#a78bfa', opacity: 0.50 },
+  { pos: [23, -4, -20], size: 2.8, rx: 0.13, ry: 0.36, rz: -0.16, drift: 0.19, color: '#38bdf8', opacity: 0.45 },
+  { pos: [-6, -12, -18], size: 1.6, rx: 0.58, ry: 0.38, rz: 0.28, drift: 0.58, color: '#7dd3fc', opacity: 0.52 },
+  // Background cubes — visible
+  { pos: [-10, 7, -34], size: 5.5, rx: 0.06, ry: 0.13, rz: 0.07, drift: 0.12, color: '#3b82f6', opacity: 0.22 },
+  { pos: [12, -9, -30], size: 4.5, rx: 0.08, ry: 0.11, rz: 0.08, drift: 0.15, color: '#8b5cf6', opacity: 0.24 },
+  { pos: [0, 18, -38],  size: 7.0, rx: 0.04, ry: 0.09, rz: 0.05, drift: 0.09, color: '#60a5fa', opacity: 0.16 },
 ];
 
 function FloatingCube({ pos, size, rx, ry, rz, drift, color, opacity }: CubeCfg) {
@@ -260,7 +267,7 @@ function FloatingCube({ pos, size, rx, ry, rz, drift, color, opacity }: CubeCfg)
       {/* Subtle fill */}
       <mesh>
         <boxGeometry args={[size, size, size]} />
-        <meshBasicMaterial color={color} transparent opacity={opacity * 0.1} depthWrite={false} side={THREE.BackSide} />
+        <meshBasicMaterial color={color} transparent opacity={opacity * 0.12} depthWrite={false} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -396,7 +403,7 @@ function Scene() {
       <GlowOrb p={[-17, 7, -26]} color="#60a5fa" spd={0.26} />
       <GlowOrb p={[18, -8, -22]} color="#a78bfa" spd={0.42} />
       <GlowOrb p={[0, 14, -30]} color="#38bdf8" spd={0.18} />
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => <Comet key={i} offset={i} />)}
+      {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19].map(i => <Comet key={i} offset={i} />)}
       <fog attach="fog" args={[PAGE_BG, 32, 98]} />
     </>
   );
@@ -560,24 +567,45 @@ export default function GraduationInvitation() {
                   <CountdownTimer />
                 </div>
 
-                {/* ── Mini stats ── */}
-                <div className="relative z-10 mt-7 w-full flex rounded-2xl overflow-hidden stats-box">
+                {/* ── Achievement Stats ── */}
+                <div className="relative z-10 mt-6 w-full grid grid-cols-3 gap-2">
                   {[
-                    { v: '4', l: 'NĂM' },
-                    { v: '∞', l: 'BUGS' },
-                    { v: '1', l: 'BẰNG' },
+                    { v: '4', l: 'NĂM', icon: '📚', sub: 'học tập' },
+                    { v: '∞', l: 'BUG', icon: '🐛', sub: 'đã fix' },
+                    { v: '1', l: 'BẰNG', icon: '🏆', sub: 'tốt nghiệp' },
                   ].map((s, i) => (
-                    <div key={i} className={`flex-1 text-center py-3.5 ${i > 0 ? 'border-l stats-divider' : ''}`}>
-                      <p className="text-white font-black leading-none"
-                        style={{ fontSize: 'clamp(18px, 2.5vw, 24px)' }}>{s.v}</p>
-                      <p className="text-sky-300/55 font-bold tracking-[0.28em] mt-1"
-                        style={{ fontSize: '8px' }}>{s.l}</p>
+                    <div key={i} className="flex flex-col items-center py-3.5 px-1 rounded-2xl"
+                      style={{
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.10)',
+                        backdropFilter: 'blur(8px)',
+                      }}>
+                      <span style={{ fontSize: 'clamp(18px, 2.2vw, 22px)' }}>{s.icon}</span>
+                      <p className="text-white font-black leading-none mt-1.5"
+                        style={{ fontSize: 'clamp(17px, 2.2vw, 22px)' }}>{s.v}</p>
+                      <p className="text-sky-300/65 font-bold tracking-[0.2em] mt-0.5"
+                        style={{ fontSize: '7px' }}>{s.l}</p>
+                      <p className="text-white/35 font-medium mt-0.5"
+                        style={{ fontSize: '7px' }}>{s.sub}</p>
                     </div>
                   ))}
                 </div>
 
-                {/* ── School badge — MORE PROMINENT ── */}
-                <div className="relative z-10 mt-5 w-full rounded-2xl school-badge-dark">
+                {/* ── IT Quote ── */}
+                <div className="relative z-10 mt-3 w-full rounded-2xl px-4 py-3.5"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(6px)',
+                  }}>
+                  <p className="text-sky-200/60 text-center italic leading-relaxed"
+                    style={{ fontSize: 'clamp(10px, 1.25vw, 12px)' }}>
+                    &ldquo;Từ sinh viên IT không biết gì đến<br />kỹ sư phần mềm biết... một chút&rdquo; 😅
+                  </p>
+                </div>
+
+                {/* ── School badge ── */}
+                <div className="relative z-10 mt-3 w-full rounded-2xl school-badge-dark">
                   <div className="flex items-center gap-3.5 px-5 py-4">
                     <div className="school-icon-wrap flex-shrink-0">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -675,62 +703,105 @@ export default function GraduationInvitation() {
                 </div>
 
                 {/* ── Event info ── */}
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
 
-                  {/* Date */}
-                  <div className="event-card event-time rounded-xl sm:rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 icon-time">
-                        <Calendar size={17} strokeWidth={2} color="white" />
+                  {/* ── Time Card ── */}
+                  <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col"
+                    style={{
+                      background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 52%, #0ea5e9 100%)',
+                      minHeight: '195px',
+                    }}>
+                    {/* Decorative orbs */}
+                    <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.09)' }} />
+                    <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.06)' }} />
+                    <div className="absolute top-1/2 right-2 w-10 h-10 rounded-full pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.04)' }} />
+
+                    <div className="relative z-10 flex flex-col flex-1">
+                      {/* Header */}
+                      <div className="flex items-center gap-2 mb-auto">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(8px)' }}>
+                          <Calendar size={16} strokeWidth={2.2} color="white" />
+                        </div>
+                        <span className="text-white/65 font-black tracking-[0.4em] uppercase"
+                          style={{ fontSize: 'clamp(7.5px, 0.9vw, 9px)' }}>Thời gian</span>
                       </div>
-                      <span className="text-blue-600 font-black tracking-[0.35em] uppercase"
-                        style={{ fontSize: 'clamp(8px, 1vw, 9.5px)' }}>Thời gian</span>
-                    </div>
-                    <p className="text-slate-400 font-semibold leading-none"
-                      style={{ fontSize: 'clamp(11px, 1.3vw, 12.5px)' }}>Thứ Hai</p>
-                    <p className="text-blue-700 font-black leading-tight tracking-tight mt-1"
-                      style={{ fontSize: 'clamp(20px, 2.6vw, 26px)' }}>
-                      06 · 04 · 2026
-                    </p>
-                    <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-full w-fit time-pill">
-                      <Clock size={12} strokeWidth={2.5} color="white" />
-                      <span className="text-white font-extrabold"
-                        style={{ fontSize: 'clamp(11px, 1.4vw, 13px)' }}>15:00 chiều</span>
+                      {/* Date */}
+                      <div className="mt-4">
+                        <p className="text-white/55 font-semibold"
+                          style={{ fontSize: 'clamp(10.5px, 1.2vw, 12px)' }}>Thứ Hai</p>
+                        <p className="text-white font-black leading-tight tracking-tight mt-0.5"
+                          style={{ fontSize: 'clamp(19px, 2.5vw, 26px)' }}>
+                          06 · 04 · 2026
+                        </p>
+                      </div>
+                      {/* Time badge */}
+                      <div className="flex items-center gap-1.5 mt-3.5 px-3 py-2 rounded-2xl w-fit"
+                        style={{
+                          background: 'rgba(255,255,255,0.15)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255,255,255,0.18)',
+                        }}>
+                        <Clock size={11} strokeWidth={2.5} color="white" />
+                        <span className="text-white font-extrabold"
+                          style={{ fontSize: 'clamp(10.5px, 1.3vw, 12.5px)' }}>15:00 chiều</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Location */}
-                  <div className="event-card event-location rounded-xl sm:rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0 icon-location">
-                        <MapPin size={17} strokeWidth={2} color="white" />
+                  {/* ── Location Card ── */}
+                  <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col"
+                    style={{
+                      background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 52%, #a855f7 100%)',
+                      minHeight: '195px',
+                    }}>
+                    {/* Decorative orbs */}
+                    <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.09)' }} />
+                    <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.06)' }} />
+
+                    <div className="relative z-10 flex flex-col flex-1">
+                      {/* Header */}
+                      <div className="flex items-center gap-2 mb-auto">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(8px)' }}>
+                          <MapPin size={16} strokeWidth={2.2} color="white" />
+                        </div>
+                        <span className="text-white/65 font-black tracking-[0.4em] uppercase"
+                          style={{ fontSize: 'clamp(7.5px, 0.9vw, 9px)' }}>Địa điểm</span>
                       </div>
-                      <span className="text-violet-600 font-black tracking-[0.35em] uppercase"
-                        style={{ fontSize: 'clamp(8px, 1vw, 9.5px)' }}>Địa điểm</span>
+                      {/* Location info */}
+                      <div className="mt-4">
+                        <p className="text-white font-extrabold leading-tight"
+                          style={{ fontSize: 'clamp(11.5px, 1.45vw, 14px)' }}>
+                          Hội trường cơ sở Hóc Môn
+                        </p>
+                        <p className="text-purple-200 font-bold mt-0.5"
+                          style={{ fontSize: 'clamp(11px, 1.3vw, 13px)' }}>HUFLIT</p>
+                        <p className="text-white/55 mt-1.5 leading-relaxed"
+                          style={{ fontSize: 'clamp(10px, 1.15vw, 11.5px)' }}>
+                          806 Lê Quang Đạo<br />Xã Hóc Môn, TP. HCM
+                        </p>
+                      </div>
+                      {/* Directions button */}
+                      <a href="https://maps.app.goo.gl/kT2QmrLRHCmfRYYq6"
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-3.5 px-3 py-2 rounded-2xl w-fit transition-all hover:scale-105 active:scale-95"
+                        style={{
+                          background: 'rgba(255,255,255,0.15)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255,255,255,0.18)',
+                          textDecoration: 'none',
+                        }}>
+                        <Navigation size={11} strokeWidth={2.5} color="white" />
+                        <span className="text-white font-bold"
+                          style={{ fontSize: 'clamp(10.5px, 1.3vw, 12.5px)' }}>Chỉ đường</span>
+                      </a>
                     </div>
-                    <div className="flex items-start gap-1.5">
-                      <Building2 size={12} strokeWidth={2} color="#7c3aed" className="flex-shrink-0 mt-0.5" />
-                      <p className="text-slate-800 font-extrabold leading-tight"
-                        style={{ fontSize: 'clamp(12px, 1.5vw, 15px)' }}>
-                        Hội trường cơ sở Hóc Môn
-                      </p>
-                    </div>
-                    <p className="text-violet-600 font-bold mt-0.5"
-                      style={{ fontSize: 'clamp(12px, 1.5vw, 14px)' }}>HUFLIT</p>
-                    <p className="text-slate-500 mt-1.5 leading-relaxed"
-                      style={{ fontSize: 'clamp(10.5px, 1.3vw, 12px)' }}>
-                      806 Lê Quang Đạo<br />
-                      Xã Hóc Môn, TP. Hồ Chí Minh
-                    </p>
-                    <a
-                      href="https://maps.app.goo.gl/kT2QmrLRHCmfRYYq6"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="directions-btn inline-flex items-center gap-1.5 mt-3"
-                    >
-                      <Navigation size={11} strokeWidth={2.5} />
-                      <span>Chỉ đường</span>
-                    </a>
                   </div>
                 </div>
 
