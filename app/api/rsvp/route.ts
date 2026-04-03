@@ -105,7 +105,7 @@ function buildEmailHtml(name: string, hostEmail: string): string {
 
     <!-- Fun IT quote -->
     <div style="padding:0 40px 32px;">
-      <div style="background:linear-gradient(135deg,#f0f9ff,#f5f3ff);border-radius:16px;border-left:4px solid #6366f1;padding:20px 24px;">
+      <div style="background:linear-gradient(135deg,#f0f9ff,#f5f3ff);border-radius:16px;padding:20px 24px;">
         <p style="color:#4338ca;font-size:14px;font-weight:600;margin:0 0 10px;font-style:italic;">
           &ldquo;4 năm code, bug, cà phê và deadline 3AM...&rdquo;
         </p>
