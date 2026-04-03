@@ -169,29 +169,37 @@ export async function POST(req: Request) {
       const { Resend } = await import('resend');
       const resend = new Resend(apiKey);
 
-      const { error } = await resend.emails.send({
-        from    : 'Nguyễn Phước Tài 🎓 <onboarding@resend.dev>',
+      const { data, error } = await resend.emails.send({
+        from    : `Nguyen Phuoc Tai - Le Tot Nghiep <onboarding@resend.dev>`,
         to      : [email],
-        replyTo : HOST_EMAIL,
-        cc      : [HOST_EMAIL],     /* chủ nhân nhận bản sao mỗi RSVP */
+        reply_to: HOST_EMAIL,
         subject,
         html,
       });
 
       if (error) {
-        console.error('[RSVP] Resend error:', error);
+        console.error('[RSVP] Resend error:', JSON.stringify(error));
+        /* Vẫn trả success để UI không bị broken */
       } else {
-        console.log(`[RSVP] Email sent → ${email} (${name})`);
+        console.log(`[RSVP] Email sent OK → id=${data?.id} to=${email} name=${name}`);
+
+        /* Gửi thông báo riêng về mail chủ nhân */
+        await resend.emails.send({
+          from   : `RSVP System <onboarding@resend.dev>`,
+          to     : [HOST_EMAIL],
+          subject: `[RSVP] ${name} vừa xác nhận tham dự!`,
+          html   : `<p><strong>${name}</strong> (<a href="mailto:${email}">${email}</a>) vừa xác nhận tham dự Lễ Tốt Nghiệp của bạn! 🎉</p>`,
+        });
       }
     } else {
       /* ── Fallback: log ra console khi chưa có API key ───── */
-      console.log(`[RSVP] No RESEND_API_KEY. Would send to ${email} (${name})`);
-      console.log('[RSVP] Subject:', subject);
+      console.warn('[RSVP] RESEND_API_KEY chưa được cấu hình. Set env var rồi redeploy.');
+      console.log(`[RSVP] Would send to: ${email} (${name})`);
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('[RSVP] Error:', err);
+    console.error('[RSVP] Unexpected error:', err);
     /* Trả về success để UI không bị broken dù email fail */
     return NextResponse.json({ success: true });
   }
